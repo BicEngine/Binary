@@ -99,22 +99,6 @@ final class TypedStream implements StreamInterface
     }
 
     /**
-     * @param Type $type
-     * @param Endianness|null $endianness
-     *
-     * @return int|float
-     */
-    private function readAs(Type $type, Endianness $endianness = null): int|float
-    {
-        [1 => $data] = \unpack(
-            $type->toPackFormat($endianness ?? $this->endianness),
-            $this->read($type->getSize()),
-        );
-
-        return $data;
-    }
-
-    /**
      * @return int
      */
     public function int8(): int
@@ -353,6 +337,18 @@ final class TypedStream implements StreamInterface
     }
 
     /**
+     * @alias of {@see self::float32()}
+     *
+     * @param Endianness|null $endianness
+     *
+     * @return float
+     */
+    public function float(Endianness $endianness = null): float
+    {
+        return $this->float32($endianness);
+    }
+
+    /**
      * @param Endianness|null $endianness
      *
      * @return float
@@ -369,13 +365,28 @@ final class TypedStream implements StreamInterface
     }
 
     /**
+     * @alias of {@see self::float64()}
+     *
+     * @param Endianness|null $endianness
+     *
+     * @return float
+     */
+    public function double(Endianness $endianness = null): float
+    {
+        return $this->float64($endianness);
+    }
+
+    /**
+     * @param Type $type
      * @param Endianness|null $endianness
      *
      * @return \DateTimeInterface
      */
-    public function timestamp(Endianness $endianness = null): \DateTimeInterface
+    public function timestamp(Type $type = Type::UINT32, Endianness $endianness = null): \DateTimeInterface
     {
-        $timestamp = $this->uint32($endianness);
+        $format = $type->toPackFormat($endianness);
+
+        [1 => $timestamp] = \unpack($format, $this->stream->read($type->getSize()));
 
         return (new \DateTimeImmutable())->setTimestamp($timestamp);
     }
@@ -389,17 +400,13 @@ final class TypedStream implements StreamInterface
      */
     public function array(
         int $size,
-        Type $type,
+        Type $type = Type::INT32,
         Endianness $endianness = null,
     ): array {
-        $result = [];
-
-        $endianness ??= $this->endianness;
-        for ($i = 0; $i < $size; ++$i) {
-            $result[] = $this->readAs($type, $endianness);
-        }
-
-        return $result;
+        return \array_values(\unpack(
+            $type->toPackFormat($endianness) . $size,
+            $this->stream->read($type->getSize() * $size),
+        ));
     }
 
     /**
