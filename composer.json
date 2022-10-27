@@ -1,5 +1,6 @@
 {
     "name": "bic-engine/binary",
+    "description": "A set of utilities for working with binary streams",
     "license": "MIT",
     "require": {
         "php": "^8.1"
