@@ -42,9 +42,7 @@
     <arg name="colors"/>
 
     <!-- includes -->
-    <file>./app</file>
-    <file>./engine</file>
-    <file>./libs</file>
+    <file>./src</file>
 
     <!-- excludes -->
     <exclude-pattern type="relative">*/tests/*</exclude-pattern>
