@@ -97,3 +97,8 @@ $typed->timestamp([Type $type = Type::UINT32], [Endianness $e = null]);
 // Read data as array { int32, int32, int32, int32 }
 $typed->array(4, Type::INT32);
 ```
+
+### TODO
+
+- Working with streams can be optimized by creating a read into a buffer 
+  (for example, 1000 bytes).
