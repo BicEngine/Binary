@@ -32,6 +32,11 @@ class ResourceStream implements StreamInterface
         return \is_resource($stream) && \get_resource_type($stream) === 'stream';
     }
 
+    /**
+     * @param resource $stream
+     *
+     * @return bool
+     */
     private function isReadable(mixed $stream): bool
     {
         $meta = \stream_get_meta_data($stream);
@@ -52,6 +57,9 @@ class ResourceStream implements StreamInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function seek(int $offset): int
     {
@@ -60,6 +68,9 @@ class ResourceStream implements StreamInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function move(int $offset): int
     {
@@ -95,6 +106,8 @@ class ResourceStream implements StreamInterface
 
     /**
      * @return void
+     *
+     * @psalm-suppress InaccessibleProperty Readonly resources can be closed
      */
     public function __destruct()
     {

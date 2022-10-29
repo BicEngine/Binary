@@ -6,10 +6,6 @@ namespace Bic\Binary;
 
 use Bic\Binary\Exception\NonReadableException;
 
-/**
- * @internal This is an internal library class, please do not use it in your code.
- * @psalm-internal Bic\Binary
- */
 final class TypedStream implements StreamInterface
 {
     /**
@@ -119,7 +115,10 @@ final class TypedStream implements StreamInterface
     }
 
     /**
-     * @return positive-int
+     * @return positive-int|0
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function uint8(): int
     {
@@ -129,7 +128,7 @@ final class TypedStream implements StreamInterface
     /**
      * @alias of {@see self::uint8()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function ubyte(): int
     {
@@ -159,7 +158,10 @@ final class TypedStream implements StreamInterface
     }
 
     /**
-     * @return positive-int
+     * @return positive-int|0
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function uint16(Endianness $endianness = null): int
     {
@@ -175,7 +177,7 @@ final class TypedStream implements StreamInterface
     /**
      * @alias of {@see self::uint16()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function word(Endianness $endianness = null): int
     {
@@ -185,7 +187,7 @@ final class TypedStream implements StreamInterface
     /**
      * @alias of {@see self::uint16()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function ushort(Endianness $endianness = null): int
     {
@@ -199,6 +201,7 @@ final class TypedStream implements StreamInterface
     {
         [1 => $int32] = \unpack('l', $this->read(4));
 
+        /** @var int */
         return $int32;
     }
 
@@ -223,7 +226,7 @@ final class TypedStream implements StreamInterface
     }
 
     /**
-     * @return positive-int
+     * @return positive-int|0
      */
     public function uint32(Endianness $endianness = null): int
     {
@@ -233,13 +236,14 @@ final class TypedStream implements StreamInterface
             default => 'L',
         }, $this->read(4));
 
+        /** @var positive-int|0 */
         return $uint32;
     }
 
     /**
      * @alias of {@see self::uint32()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function dword(Endianness $endianness = null): int
     {
@@ -249,7 +253,7 @@ final class TypedStream implements StreamInterface
     /**
      * @alias of {@see self::uint32()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function ulong(Endianness $endianness = null): int
     {
@@ -259,7 +263,7 @@ final class TypedStream implements StreamInterface
     /**
      * @alias of {@see self::uint32()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function uint(Endianness $endianness = null): int
     {
@@ -273,6 +277,7 @@ final class TypedStream implements StreamInterface
     {
         [1 => $int64] = \unpack('q', $this->read(8));
 
+        /** @var int */
         return $int64;
     }
 
@@ -287,7 +292,7 @@ final class TypedStream implements StreamInterface
     }
 
     /**
-     * @return positive-int
+     * @return positive-int|0
      */
     public function uint64(Endianness $endianness = null): int
     {
@@ -297,13 +302,14 @@ final class TypedStream implements StreamInterface
             default => 'Q',
         }, $this->read(8));
 
+        /** @var positive-int|0 */
         return $uint64;
     }
 
     /**
      * @alias of {@see self::uint64()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function uquad(Endianness $endianness = null): int
     {
@@ -313,7 +319,7 @@ final class TypedStream implements StreamInterface
     /**
      * @alias of {@see self::uint64()}
      *
-     * @return positive-int
+     * @return positive-int|0
      */
     public function qword(Endianness $endianness = null): int
     {
@@ -333,6 +339,7 @@ final class TypedStream implements StreamInterface
             default => 'f',
         }, $this->read(4));
 
+        /** @var float */
         return $float;
     }
 
@@ -361,6 +368,7 @@ final class TypedStream implements StreamInterface
             default => 'd',
         }, $this->read(8));
 
+        /** @var float */
         return $double;
     }
 
@@ -386,6 +394,7 @@ final class TypedStream implements StreamInterface
     {
         $format = $type->toPackFormat($endianness);
 
+        /** @var int $timestamp */
         [1 => $timestamp] = \unpack($format, $this->stream->read($type->getSize()));
 
         return (new \DateTimeImmutable())->setTimestamp($timestamp);
@@ -403,10 +412,13 @@ final class TypedStream implements StreamInterface
         Type $type = Type::INT32,
         Endianness $endianness = null,
     ): array {
-        return \array_values(\unpack(
+        /** @var array<positive-int, float|int> $values */
+        $values = \unpack(
             $type->toPackFormat($endianness) . $size,
             $this->stream->read($type->getSize() * $size),
-        ));
+        );
+
+        return \array_values($values);
     }
 
     /**

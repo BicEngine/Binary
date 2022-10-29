@@ -67,7 +67,7 @@ enum Type
     case FLOAT64;
 
     /**
-     * @return positive-int|0
+     * @return positive-int
      */
     public function getSize(): int
     {
@@ -86,7 +86,7 @@ enum Type
             self::INT64,
             self::UINT64 => 8,
 
-            default => 0,
+            default => 1,
         };
     }
 
